@@ -538,21 +538,24 @@
         if(ball.x+ball.r>W)  {ball.x=W-ball.r;  ball.vx=-Math.abs(ball.vx); sfx.hit();}
         if(ball.y-ball.r<0)  {ball.y=ball.r;    ball.vy=Math.abs(ball.vy);  sfx.hit();}
 
-        // paddle hit — use bounding box; works for all shapes
+        // paddle hit — per-shape hitbox
         if (ball.vy>0
-          && ball.y+ball.r>=paddle.y
-          && ball.y-ball.r<=paddle.y+paddle.h
           && ball.x+ball.r>=paddle.x
-          && ball.x-ball.r<=paddle.x+paddle.w) {
-          ball.y=paddle.y-ball.r;
-          ball.vy=-Math.abs(ball.vy);
-          var rel=(ball.x-(paddle.x+paddle.w/2))/(paddle.w/2);
-          var spd=Math.hypot(ball.vx,ball.vy);
-          var ang=rel*(Math.PI/3);
-          ball.vx=Math.sin(ang)*spd;
-          ball.vy=-Math.cos(ang)*spd;
-          sfx.hit();
-          spawnParts(ball.x,paddle.y,6,C.cyan);
+          && ball.x-ball.r<=paddle.x+paddle.w
+          && ball.y+ball.r>=paddle.y
+          && ball.y-ball.r<=paddle.y+paddle.h) {
+          var hitSurface = paddleHitSurface(ball, paddle);
+          if (hitSurface !== null) {
+            ball.y = hitSurface - ball.r;
+            ball.vy = -Math.abs(ball.vy);
+            var rel=(ball.x-(paddle.x+paddle.w/2))/(paddle.w/2);
+            var spd=Math.hypot(ball.vx,ball.vy);
+            var ang=rel*(Math.PI/3);
+            ball.vx=Math.sin(ang)*spd;
+            ball.vy=-Math.cos(ang)*spd;
+            sfx.hit();
+            spawnParts(ball.x,hitSurface,6,C.cyan);
+          }
         }
 
         // brick collisions
@@ -624,6 +627,90 @@
     var ol=(ball.x+ball.r)-br.x, or2=(br.x+br.w)-(ball.x-ball.r);
     var ot=(ball.y+ball.r)-br.y, ob=(br.y+br.h)-(ball.y-ball.r);
     if(Math.min(ol,or2)<Math.min(ot,ob)) ball.vx=-ball.vx; else ball.vy=-ball.vy;
+  }
+
+  // Returns the y coordinate of the paddle surface at ball.x for the current shape,
+  // or null if the ball is not actually over a solid part of the paddle.
+  function paddleHitSurface(ball, p) {
+    var x=ball.x, px=p.x, py=p.y, pw=p.w, ph=p.h;
+    var t=(x-px)/pw; // normalised 0..1 position across paddle
+
+    switch(p.shape){
+
+      case "convex": {
+        // top bows upward: quadratic arc from (px,py+ph*0.5) through (px+pw/2,py-8) to (px+pw,py+ph*0.5)
+        // parametric: surfaceY = py+ph*0.5 - 4*( py+ph*0.5-(py-8) )*t*(1-t)
+        //                      = py+ph*0.5 - 4*(ph*0.5+8)*t*(1-t)
+        if(t<0||t>1) return null;
+        var surfY = py + ph*0.5 - 4*(ph*0.5+8)*t*(1-t);
+        return surfY;
+      }
+
+      case "concave": {
+        // top edge is flat (straight line from (px,py) to (px+pw,py))
+        if(t<0||t>1) return null;
+        return py; // flat top; the inward bow is on the bottom
+      }
+
+      case "wedge": {
+        // left edge at py+ph*0.6, right edge at py  → linear interpolation
+        if(t<0||t>1) return null;
+        return (py + ph*0.6) + t*(py - (py + ph*0.6));
+        // simplifies to: py + ph*0.6*(1-t)
+      }
+
+      case "diamond": {
+        // V-peak at centre (py-8), base corners at py+ph*0.5
+        // left half: linear from (0, py+ph*0.5) to (0.5, py-8)
+        // right half: linear from (0.5, py-8) to (1, py+ph*0.5)
+        if(t<0||t>1) return null;
+        if(t<=0.5) return (py+ph*0.5) + t*2*((py-8)-(py+ph*0.5));
+        else       return (py-8) + (t-0.5)*2*((py+ph*0.5)-(py-8));
+      }
+
+      case "fork": {
+        // Two parabolic bumps.  Left bump centred at t=0.18, right at t=0.82, valleys at t=0 (side), t=0.5 (middle), t=1 (side).
+        // Approximate: for each bump use the same quadratic formula as convex but offset.
+        // Left bump: t in [0, 0.35], peak at t=0.175 → surfY = py+ph*0.5 - 4*(ph*0.5+4) * t/0.35 * (1-t/0.35)
+        // Right bump: t in [0.65, 1], peak at t=0.825
+        // Middle gap: t in [0.35, 0.65] → no hit (gap between tines)
+        if(t<0||t>1) return null;
+        if(t<=0.35){
+          var lt=t/0.35;
+          return py+ph*0.5 - 4*(ph*0.5+4)*lt*(1-lt);
+        }
+        if(t>=0.65){
+          var rt=(t-0.65)/0.35;
+          return py+ph*0.5 - 4*(ph*0.5+4)*rt*(1-rt);
+        }
+        return null; // gap between tines — miss
+      }
+
+      case "blade": {
+        // Trapezoid: pointed ends, flat top surface between x+6 and x+w-6 at y+3
+        // Outside those points it slopes to y+h at the very edges.
+        if(x < px+6 || x > px+pw-6) return null; // outside blade width
+        return py+3; // flat blade top
+      }
+
+      case "omega": {
+        // U-channel: two raised walls (x to x+7 and x+w-7 to x+w) at py,
+        // flat centre channel floor at py+ph-6.
+        // Ball can land on either wall top or the channel floor.
+        if(t<0||t>1) return null;
+        var leftWall  = x <= px+7;
+        var rightWall = x >= px+pw-7;
+        if(leftWall || rightWall){
+          return py; // top of the raised wall
+        } else {
+          return py+ph-6; // channel floor
+        }
+      }
+
+      default: // flat
+        if(t<0||t>1) return null;
+        return py;
+    }
   }
 
   /* LASERS */
@@ -754,7 +841,6 @@
       if(br.shake>0) ctx.translate((Math.random()-0.5)*br.shake,0);
 
       var hpr = br.indestructible ? 1 : br.hp/br.maxHp;
-      ctx.shadowColor=br.color; ctx.shadowBlur=16+12*(1-hpr);
 
       // fill gradient
       var g=ctx.createLinearGradient(br.x,br.y,br.x,br.y+br.h);
@@ -776,7 +862,7 @@
         for(var p=0;p<tot;p++){
           ctx.beginPath(); ctx.arc(sx+p*(ps+gap)+ps/2, br.y+br.h-6, ps/2, 0, Math.PI*2);
           ctx.fillStyle=p<br.hp?br.color:"rgba(255,255,255,0.1)";
-          ctx.shadowBlur=p<br.hp?8:0; ctx.fill();
+          ctx.fill();
         }
       }
 
@@ -798,12 +884,8 @@
     var px=paddle.x, py=paddle.y, pw=paddle.w, ph=paddle.h, shape=paddle.shape;
     var laserOn=!!activePU["laser"];
     var col=laserOn?C.yellow:C.cyan;
-    var now=Date.now();
-    // subtle pulse
-    var pulse=0.85+Math.sin(now*0.004)*0.15;
-
     ctx.save();
-    ctx.shadowColor=col; ctx.shadowBlur=28*pulse;
+    ctx.shadowColor=col; ctx.shadowBlur=18;
 
     // draw shape
     ctx.beginPath();
@@ -969,7 +1051,6 @@
   function drawParticles() {
     particles.forEach(function(p){
       ctx.save(); ctx.globalAlpha=Math.max(0,p.life);
-      ctx.shadowColor=p.color; ctx.shadowBlur=10;
       ctx.fillStyle=p.color;
       ctx.beginPath(); ctx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2); ctx.fill();
       ctx.restore();
@@ -988,10 +1069,10 @@
       var bw=120, bx=W-bw-16;
       ctx.save();
       ctx.fillStyle="rgba(0,0,0,0.55)"; rrect(bx,y-13,bw,10,3); ctx.fill();
-      ctx.fillStyle=tp.color; ctx.shadowColor=tp.color; ctx.shadowBlur=10;
+      ctx.fillStyle=tp.color;
       rrect(bx,y-13,bw*rem,10,3); ctx.fill();
       ctx.fillStyle=tp.color; ctx.font="10px Segoe UI";
-      ctx.textAlign="right"; ctx.shadowBlur=0;
+      ctx.textAlign="right";
       ctx.fillText(tp.label, bx-6, y);
       ctx.restore();
       y-=20;
