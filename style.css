@@ -1,0 +1,291 @@
+/* ===========================
+   GLOBAL STYLES
+=========================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    background: #020408;
+    color: white;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* ===========================
+   MENU PARTICLE CANVAS
+=========================== */
+#menuCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* push all screens above the particle canvas */
+.screen, #game-ui, #powerup-ui, #gameCanvas {
+    z-index: 1;
+    position: absolute;
+}
+
+/* Centering helper */
+.screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+}
+
+.hidden {
+    display: none;
+}
+
+/* ===========================
+   TITLE + HEADERS
+=========================== */
+.menu-inner {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    font-size: 72px;
+    letter-spacing: 8px;
+    color: #f704ba;
+    text-shadow:
+        0 0 12px #f704ba,
+        0 0 40px #00eaff,
+        0 0 80px #00eaff44;
+    margin-bottom: 6px;
+    animation: titlePulse 3s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+    0%, 100% { text-shadow: 0 0 12px #f704ba, 0 0 40px #00eaff, 0 0 80px #00eaff44; }
+    50%       { text-shadow: 0 0 24px #f704ba, 0 0 60px #00eaff, 0 0 120px #00eaff66; }
+}
+
+.menu-sub {
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: #00eaff;
+    opacity: 0.45;
+    margin-bottom: 48px;
+    text-transform: uppercase;
+}
+
+h2 {
+    font-size: 40px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px #00eaff;
+}
+
+/* ===========================
+   BUTTONS
+=========================== */
+button {
+    background: transparent;
+    border: 2px solid #00eaff;
+    color: #00eaff;
+    padding: 12px 28px;
+    margin: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.2s;
+    text-shadow: 0 0 10px #00eaff;
+}
+
+button:hover {
+    background: #00eaff;
+    color: #000;
+    box-shadow: 0 0 20px #00eaff;
+}
+
+/* ===========================
+   GAME CANVAS
+=========================== */
+#gameCanvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #0a0a0a;
+    border: 2px solid #00eaff;
+    box-shadow: 0 0 20px #00eaff;
+}
+
+/* ===========================
+   GAME UI (Score, Lives)
+=========================== */
+#game-ui {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 22px;
+    text-shadow: 0 0 10px #00eaff;
+}
+
+#score, #lives, #level-name {
+    margin-bottom: 10px;
+}
+
+/* ===========================
+   POWER-UP POPUP
+=========================== */
+#powerup-ui {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    font-size: 24px;
+    color: #ff00ff;
+    text-shadow: 0 0 15px #ff00ff;
+    animation: fadeInOut 1.5s ease forwards;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-10px); }
+    20% { opacity: 1; transform: translateY(0); }
+    80% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-10px); }
+}
+
+/* ===========================
+   PAUSE + GAME OVER SCREENS
+=========================== */
+#pause-screen, #game-over {
+    background: rgba(0, 0, 0, 0.75);
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #00eaff;
+}
+
+/* ===========================
+   LEVEL SELECT GRID
+=========================== */
+#level-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+#level-list button {
+    width: 120px;
+}
+
+/* ===========================
+   SETTINGS CARD
+=========================== */
+.settings-card {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch;
+    background: rgba(0, 10, 20, 0.82);
+    border: 1px solid rgba(0, 234, 255, 0.25);
+    border-radius: 16px;
+    padding: 40px 48px 32px;
+    min-width: 340px;
+    box-shadow:
+        0 0 0 1px rgba(0,234,255,0.08),
+        0 0 40px rgba(0,234,255,0.12),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+}
+
+.settings-card h2 {
+    margin-bottom: 32px;
+    font-size: 28px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #00eaff;
+    text-shadow: 0 0 20px #00eaff;
+}
+
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(0, 234, 255, 0.08);
+}
+
+.settings-row:last-of-type {
+    border-bottom: none;
+}
+
+.settings-label {
+    font-size: 16px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.8);
+}
+
+.settings-divider {
+    height: 1px;
+    background: rgba(0,234,255,0.1);
+    margin: 20px 0 24px;
+}
+
+/* Toggle switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.toggle-track {
+    display: block;
+    width: 52px;
+    height: 28px;
+    background: rgba(0,234,255,0.12);
+    border: 1px solid rgba(0,234,255,0.3);
+    border-radius: 28px;
+    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+    position: relative;
+}
+
+.toggle-thumb {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 18px;
+    height: 18px;
+    background: rgba(0,234,255,0.4);
+    border-radius: 50%;
+    transition: transform 0.25s, background 0.25s, box-shadow 0.25s;
+}
+
+.toggle-switch input:checked + .toggle-track {
+    background: rgba(0,234,255,0.2);
+    border-color: #00eaff;
+    box-shadow: 0 0 12px rgba(0,234,255,0.4);
+}
+
+.toggle-switch input:checked + .toggle-track .toggle-thumb {
+    transform: translateX(24px);
+    background: #00eaff;
+    box-shadow: 0 0 10px #00eaff;
+}
+
+.settings-card button {
+    margin: 0;
+    font-size: 15px;
+    padding: 10px 24px;
+    align-self: flex-start;
+    letter-spacing: 1px;
+}

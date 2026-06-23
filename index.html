@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Byte Breaker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+</head>
+
+<body>
+
+    <!-- MENU PARTICLE CANVAS-->
+    <canvas id="menuCanvas"></canvas>
+
+    <!-- START MENU -->
+    <div id="start-screen" class="screen">
+        <div class="menu-inner">
+            <h1 class="title">BYTE BREAKER</h1>
+            <p class="menu-sub">NEON ARCADE · BREAK IT ALL</p>
+            <div class="menu-buttons">
+                <button id="play-btn">▶ &nbsp;Play</button>
+                <button id="levels-btn">⊞ &nbsp;Levels</button>
+                <button id="settings-btn">⚙ &nbsp;Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LEVEL SELECT -->
+    <div id="level-screen" class="screen hidden">
+        <h2>Select Level</h2>
+        <div id="level-list"></div>
+        <button id="back-to-menu">Back</button>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="settings-screen" class="screen hidden">
+        <div class="settings-card">
+            <h2>Settings</h2>
+
+            <div class="settings-row">
+                <span class="settings-label">🔊 Sound</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="sound-toggle" checked>
+                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+            </div>
+
+            <div class="settings-row">
+                <span class="settings-label">✦ Particles</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="particles-toggle" checked>
+                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+            </div>
+
+            <div class="settings-divider"></div>
+            <button id="settings-back">← Back</button>
+        </div>
+    </div>
+
+    <!-- GAME UI OVERLAY -->
+    <div id="game-ui" class="hidden">
+        <div id="score">Score: 0</div>
+        <div id="lives">Lives: 3</div>
+        <div id="level-name">Level 1</div>
+    </div>
+
+    <!-- POWER-UP DISPLAY -->
+    <div id="powerup-ui" class="hidden">
+        <span id="powerup-text"></span>
+    </div>
+
+    <!-- GAME CANVAS -->
+    <canvas id="gameCanvas" width="900" height="600"></canvas>
+
+    <!-- PAUSE MENU -->
+    <div id="pause-screen" class="screen hidden">
+        <h2>Paused</h2>
+        <button id="resume-btn">Resume</button>
+        <button id="pause-menu-btn">Menu</button>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="game-over" class="screen hidden">
+        <h2>Game Over</h2>
+        <p id="final-score"></p>
+        <button id="retry-btn">Retry</button>
+        <button id="gameover-menu-btn">Menu</button>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
