@@ -64,17 +64,17 @@
   };
 
   /* PADDLE SHAPES */
-  var PADDLE_SHAPES = ["flat","convex","concave","wedge","diamond","fork","blade","omega"];
+  var PADDLE_SHAPES = ["flat","convex","concave","wedge","diamond","fork","blade","omega","omega","circle","flat","diamond","concave","blade","convex","wedge","fork","omega","circle","diamond"];
 
   /* LEVELS */
   var LEVELS = [
-    { name:"Boot Sector",    ballSpeed:5.5, bricks:[
+    { name:"Boot Sector", ballSpeed:5.5, bricks:[
       "1 1 1 1 1 1 1 1 1",
       "1 1 1 1 1 1 1 1 1",
       "2 2 2 2 2 2 2 2 2",
       "2 P 2 2 2 2 2 P 2",
     ]},
-    { name:"Kernel Panic",   ballSpeed:6.0, bricks:[
+    { name:"Kernel Panic", ballSpeed:6.0, bricks:[
       "1 2 1 2 1 2 1 2 1",
       "2 3 2 3 2 3 2 3 2",
       "1 2 P 2 1 2 P 2 1",
@@ -90,7 +90,7 @@
       "1 2 2 2 2 2 2 2 1",
       "X 1 1 1 1 1 1 1 X",
     ]},
-    { name:"Buffer Zone",    ballSpeed:7.0, bricks:[
+    { name:"Buffer Zone", ballSpeed:7.0, bricks:[
       "3 0 3 0 3 0 3 0 3",
       "0 2 0 2 0 2 0 2 0",
       "3 0 P 0 3 0 P 0 3",
@@ -98,7 +98,7 @@
       "3 0 3 0 3 0 3 0 3",
       "2 L 2 2 2 2 2 L 2",
     ]},
-    { name:"Memory Leak",    ballSpeed:7.5, bricks:[
+    { name:"Memory Leak", ballSpeed:7.5, bricks:[
       "X X X 1 1 1 X X X",
       "X 4 4 4 4 4 4 4 X",
       "X 4 3 3 P 3 3 4 X",
@@ -107,7 +107,7 @@
       "X 4 4 4 4 4 4 4 X",
       "X X X X X X X X X",
     ]},
-    { name:"Root Access",    ballSpeed:8.0, bricks:[
+    { name:"Root Access", ballSpeed:8.0, bricks:[
       "4 4 4 4 4 4 4 4 4",
       "4 X 3 3 3 3 3 X 4",
       "4 3 2 2 P 2 2 3 4",
@@ -116,7 +116,7 @@
       "4 X 3 3 3 3 3 X 4",
       "4 4 4 4 4 4 4 4 4",
     ]},
-    { name:"Kernel Root",    ballSpeed:8.5, bricks:[
+    { name:"Kernel Root", ballSpeed:8.5, bricks:[
       "X 1 2 3 4 3 2 1 X",
       "1 2 3 4 X 4 3 2 1",
       "2 3 4 X P X 4 3 2",
@@ -125,7 +125,7 @@
       "1 2 3 4 X 4 3 2 1",
       "X 1 2 3 4 3 2 1 X",
     ]},
-    { name:"BYTE BREAKER",   ballSpeed:9.0, bricks:[
+    { name:"Byte Breaker", ballSpeed:9.0, bricks:[
       "X X X X 4 X X X X",
       "X 4 4 4 4 4 4 4 X",
       "X 4 X 3 P 3 X 4 X",
@@ -133,6 +133,110 @@
       "X 4 X 3 P 3 X 4 X",
       "X 4 4 4 4 4 4 4 X",
       "X X X X X X X X X",
+    ]},
+    { name:"Data Corruption", ballSpeed:9.2, bricks:[
+      "4 4 4 4 4 4 4 4 4",
+      "3 3 3 3 3 3 3 3 3",
+      "2 2 P 2 2 2 P 2 2",
+      "3 3 3 X L X 3 3 3",
+      "4 4 4 4 4 4 4 4 4",
+    ]},
+    { name:"Runtime Error", ballSpeed:9.4, bricks:[
+      "X 4 X 4 X 4 X 4 X",
+      "4 3 4 3 4 3 4 3 4",
+      "3 2 3 P 3 P 3 2 3",
+      "4 3 X 2 L 2 X 3 4",
+      "3 2 3 3 3 3 3 2 3",
+      "4 3 4 3 4 3 4 3 4",
+    ]},
+    { name:"Segmentation Fault", ballSpeed:9.6, bricks:[
+      "4 X 4 X 4 X 4 X 4",
+      "X 4 3 3 3 3 3 4 X",
+      "4 3 X P 3 P X 3 4",
+      "X 3 2 X L X 2 3 X",
+      "4 3 X P 3 P X 3 4",
+      "X 4 3 3 3 3 3 4 X",
+      "4 X 4 X 4 X 4 X 4",
+    ]},
+    { name:"Packet Storm", ballSpeed:9.8, bricks:[
+      "4 4 X 4 X 4 X 4 4",
+      "4 3 4 3 4 3 4 3 4",
+      "X 4 P X P X P 4 X",
+      "4 3 X 4 L 4 X 3 4",
+      "X 4 P X P X P 4 X",
+      "4 3 4 3 4 3 4 3 4",
+      "4 4 X 4 X 4 X 4 4",
+    ]},
+    { name:"Logic Bomb", ballSpeed:10.0, bricks:[
+      "4 X 4 X 4 X 4 X 4",
+      "X 4 X 4 X 4 X 4 X",
+      "4 X P X 4 X P X 4",
+      "X 4 X L X L X 4 X",
+      "4 X P X 4 X P X 4",
+      "X 4 X 4 X 4 X 4 X",
+      "4 X 4 X 4 X 4 X 4",
+    ]},
+    { name:"Privilege Escalation", ballSpeed:10.2, bricks:[
+      "4 4 4 X 4 X 4 4 4",
+      "4 X 4 4 4 4 4 X 4",
+      "4 4 X P 4 P X 4 4",
+      "X 4 4 X L X 4 4 X",
+      "4 4 X P 4 P X 4 4",
+      "4 X 4 4 4 4 4 X 4",
+      "4 4 4 X 4 X 4 4 4",
+    ]},
+    { name:"Firewall Breach", ballSpeed: 9.5, bricks:[
+      "X 4 4 4 4 4 4 4 X",
+      "4 X 4 4 4 4 4 X 4",
+      "4 4 X 4 4 4 X 4 4",
+      "4 4 X X L X X 4 4",
+      "4 X 4 4 X 4 4 X 4",
+      "X 4 4 4 4 4 4 4 X"
+    ]},
+    { name:"Core Dump", ballSpeed: 10.0, bricks:[
+      "X X X 4 4 4 X X X",
+      "X 1 X X 4 X X 2 X",
+      "X 3 2 X 1 3 4 L X",
+      "X 4 X 2 2 X 4 2 X",
+      "X 3 2 3 X 4 X P X",
+      "X 2 X X 4 4 4 4 X",
+      "X X X X X X X X X",
+    ]},
+    { name:"Zero-Day", ballSpeed:10.5, bricks:[
+      "X 4 X 4 X 4 X 4 X",
+      "4 X 4 X 4 X 4 X 4",
+      "X 4 X P X P X 4 X",
+      "4 X L X X X L X 4",
+      "X 4 X P X P X 4 X",
+      "4 X 4 X 4 X 4 X 4",
+      "X 4 X 4 X 4 X 4 X",
+    ]},
+    { name:"Kernel Collapse", ballSpeed:10.8, bricks:[
+      "X X X X 4 X X X X",
+      "X 4 4 4 4 4 4 4 X",
+      "X 4 X X P X X 4 X",
+      "4 4 X 4 L 4 X 4 4",
+      "X 4 X X P X X 4 X",
+      "X 4 4 4 4 4 4 4 X",
+      "X X X X X X X X X",
+    ]},
+    { name:"System Failure", ballSpeed:11.2, bricks:[
+      "4 X 4 X 4 X 4 X 4",
+      "X 4 X 4 X 4 X 4 X",
+      "4 X 4 X P X 4 X 4",
+      "X 4 X L X L X 4 X",
+      "4 X 4 X P X 4 X 4",
+      "X 4 X 4 X 4 X 4 X",
+      "4 X 4 X 4 X 4 X 4",
+    ]},
+    { name:"Singularity Protocol", ballSpeed:11.5, bricks:[
+      "X X 4 X 4 X 4 X X",
+      "X 4 X 4 X 4 X 4 X",
+      "4 X 4 X P X 4 X 4",
+      "X 4 X L X L X 4 X",
+      "4 X 4 X P X 4 X 4",
+      "X 4 X 4 X 4 X 4 X",
+      "X X 4 X 4 X 4 X X",
     ]},
   ];
 
@@ -220,6 +324,16 @@
   var $final    = document.getElementById("final-score");
   var $lvlList  = document.getElementById("level-list");
 
+  // Sidebar extra elements
+  var $sbScore    = document.getElementById("score");
+  var $sbBest     = document.getElementById("high-score");
+  var $sbLives    = document.getElementById("lives");
+  var $sbLevelNum = document.getElementById("level-num");
+  var $sbLvlName  = document.getElementById("level-name");
+  var $sbBricks   = document.getElementById("sb-bricks");
+  var $sbPowerups = document.getElementById("sb-powerups");
+  var $sbCombo    = document.getElementById("sb-combo");
+
   document.getElementById("play-btn").addEventListener("click",        function(){startLevel(0);});
   document.getElementById("levels-btn").addEventListener("click",      showLevels);
   document.getElementById("settings-btn").addEventListener("click",    showSettings);
@@ -264,7 +378,7 @@
         "<div style='font-size:11px;opacity:.45;letter-spacing:2px'>LV"+(i+1)+"</div>"+
         "<div style='font-size:14px;margin:3px 0'>"+lv.name+"</div>"+
         "<div style='font-size:10px;color:"+C.cyan+"'>"+( hs?"Best: "+hs:"")+"</div>"+
-        "<div style='font-size:9px;opacity:.35;margin-top:2px'>▬ "+PADDLE_SHAPES[i].toUpperCase()+"</div>";
+        "<div style='font-size:9px;opacity:.35;margin-top:2px'>▬ "+(PADDLE_SHAPES[i]||"flat").toUpperCase()+"</div>";
       if (!ul.has(i)) {
         btn.disabled=true; btn.style.opacity="0.28"; btn.style.cursor="not-allowed";
         btn.style.borderColor="#333";
@@ -312,7 +426,7 @@
       state="win"; showWinScreen(); return;
     }
 
-    lvlIdx=next; combo=0; comboTimer=0;
+    lvlIdx=next; score=0; combo=0; comboTimer=0;
     particles=[]; falling=[]; lasers=[];
     Object.keys(puTimers).forEach(function(k){clearTimeout(puTimers[k]);});
     puTimers={}; activePU={};
@@ -462,11 +576,59 @@
 
   // HUD */
   function updateHUD() {
-    $score.textContent   = "Score: "+score;
-    var dots = "";
-    for(var i=0;i<5;i++) dots += i<lives ? "●" : '<span style="opacity:.2">●</span>';
-    $lives.innerHTML  = "Lives: "+dots;
-    $lvlName.textContent = (lvlIdx+1)+". "+LEVELS[lvlIdx].name;
+    if ($sbScore)    $sbScore.textContent    = score;
+    if ($sbBest)     $sbBest.textContent     = getHigh(lvlIdx);
+    if ($sbLevelNum) $sbLevelNum.textContent = lvlIdx + 1;
+    if ($sbLvlName)  $sbLvlName.textContent  = LEVELS[lvlIdx].name;
+    if ($sbLives) {
+      var dots = "";
+      for(var i=0;i<5;i++) dots += i<lives ? "●" : '<span style="opacity:.2">●</span>';
+      $sbLives.innerHTML = dots;
+    }
+    updateSidebarBricks();
+    updateSidebarCombo();
+  }
+
+  function updateSidebarBricks() {
+    if (!$sbBricks) return;
+    var count = 0;
+    for(var i=0;i<bricks.length;i++) { if(!bricks[i].indestructible) count++; }
+    $sbBricks.textContent = count > 0 ? count : "✓";
+  }
+
+  function updateSidebarCombo() {
+    if (!$sbCombo) return;
+    if (combo > 1 && comboTimer > 0) {
+      $sbCombo.textContent = combo + "x";
+      $sbCombo.className = "sb-value sb-combo-val";
+    } else {
+      $sbCombo.textContent = "—";
+      $sbCombo.className = "sb-value sb-combo-val inactive";
+    }
+  }
+
+  function updateSidebarPU() {
+    if (!$sbPowerups) return;
+    var keys = Object.keys(activePU);
+    if (keys.length === 0) {
+      $sbPowerups.innerHTML = '<div class="sb-pu-empty">none active</div>';
+      return;
+    }
+    var html = '<div class="sb-pu-row">';
+    keys.forEach(function(id) {
+      var tp = null;
+      for(var i=0;i<PTYPES.length;i++){if(PTYPES[i].id===id){tp=PTYPES[i];break;}}
+      if (!tp || !tp.duration) return;
+      var rem = Math.max(0, (activePU[id] - Date.now()) / tp.duration);
+      var pct = Math.round(rem * 100);
+      html += '<div class="sb-pu-item">' +
+        '<div class="sb-pu-name" style="color:'+tp.color+';text-shadow:0 0 8px '+tp.color+'">'+tp.label+'</div>' +
+        '<div class="sb-pu-bar-track">' +
+          '<div class="sb-pu-bar-fill" style="width:'+pct+'%;background:'+tp.color+';box-shadow:0 0 6px '+tp.color+'"></div>' +
+        '</div></div>';
+    });
+    html += '</div>';
+    $sbPowerups.innerHTML = html;
   }
 
   /* ANNOUNCE */
@@ -481,6 +643,11 @@
     scanlineOffset=(scanlineOffset+0.5)%4;
     if (state==="playing") update(dt);
     draw();
+    if (state==="playing" || state==="paused") {
+      updateSidebarPU();
+      updateSidebarCombo();
+      updateSidebarBricks();
+    }
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
@@ -559,12 +726,17 @@
         }
 
         // brick collisions
+        var collided=false;
         for(var bi2=bricks.length-1; bi2>=0; bi2--){
+          if(ball._lastBrick === bi2) continue;
           if(rectCircle(bricks[bi2],ball)){
             hitBrick(bi2,ball);
+            ball._lastBrick = bi2;
+            collided=true;
             break;
           }
         }
+        if(!collided) ball._lastBrick = null;
 
         // lost ball
         if(ball.y-ball.r>H){ dead.push(bi); break; }
@@ -624,9 +796,51 @@
   }
 
   function bounceOff(br, ball) {
-    var ol=(ball.x+ball.r)-br.x, or2=(br.x+br.w)-(ball.x-ball.r);
-    var ot=(ball.y+ball.r)-br.y, ob=(br.y+br.h)-(ball.y-ball.r);
-    if(Math.min(ol,or2)<Math.min(ot,ob)) ball.vx=-ball.vx; else ball.vy=-ball.vy;
+    var cx=Math.max(br.x, Math.min(br.x+br.w, ball.x));
+    var cy=Math.max(br.y, Math.min(br.y+br.h, ball.y));
+    var dx=ball.x-cx, dy=ball.y-cy;
+    var dist=Math.sqrt(dx*dx + dy*dy);
+    var nx=0, ny=0;
+
+    if(dist === 0) {
+      var ol=(ball.x+ball.r)-br.x, or2=(br.x+br.w)-(ball.x-ball.r);
+      var ot=(ball.y+ball.r)-br.y, ob=(br.y+br.h)-(ball.y-ball.r);
+      if(Math.min(ol,or2) < Math.min(ot,ob)) {
+        if (ol < or2) {
+          nx = -1; ny = 0;
+          ball.x = br.x - ball.r - 1;
+        } else {
+          nx = 1; ny = 0;
+          ball.x = br.x + br.w + ball.r + 1;
+        }
+        ball.vx = -ball.vx;
+      } else {
+        if (ot < ob) {
+          nx = 0; ny = -1;
+          ball.y = br.y - ball.r - 1;
+        } else {
+          nx = 0; ny = 1;
+          ball.y = br.y + br.h + ball.r + 1;
+        }
+        ball.vy = -ball.vy;
+      }
+    } else {
+      nx = dx / dist; ny = dy / dist;
+      var overlap = ball.r - dist + 0.5;
+      if (overlap > 0) {
+        ball.x += nx * overlap;
+        ball.y += ny * overlap;
+      }
+      var dot = ball.vx * nx + ball.vy * ny;
+      ball.vx -= 2 * dot * nx;
+      ball.vy -= 2 * dot * ny;
+    }
+
+    // extra safety: if the ball is still colliding, push it out along the collision normal
+    for(var i=0;i<8 && rectCircle(br, ball); i++){
+      ball.x += nx * 1.5;
+      ball.y += ny * 1.5;
+    }
   }
 
   // Returns the y coordinate of the paddle surface at ball.x for the current shape,
@@ -706,6 +920,17 @@
           return py+ph-6; // channel floor
         }
       }
+      case "circle": {
+        // Elliptical top surface — ball rides the curved top of the disc.
+        // Ellipse: centre at (px+pw/2, py+ph/2), rx=pw/2, ry=ph/2+2
+        // At horizontal position x, the top of the ellipse is:
+        //   surfY = cy - ry * sqrt(1 - ((x-cx)/rx)^2)
+        if(t<0||t>1) return null;
+        var cx2 = px+pw/2, cy2 = py+ph/2+2, rx2 = pw/2, ry2 = ph/2+2;
+        var dx2 = (x-cx2)/rx2;
+        if(Math.abs(dx2)>1) return null;
+        return cy2 - ry2 * Math.sqrt(1 - dx2*dx2);
+      }
 
       default: // flat
         if(t<0||t>1) return null;
@@ -779,8 +1004,7 @@
       drawLasers();
       drawFalling();
       drawParticles();
-      drawPUTimers();
-      if(combo>1) drawCombo();
+      // drawPUTimers and drawCombo moved to HTML sidebar
       if(announceTimer>0) drawAnnounce();
     }
     drawScanlines();
@@ -897,6 +1121,7 @@
       case "fork":    drawPaddleFork(px,py,pw,ph);    break;
       case "blade":   drawPaddleBlade(px,py,pw,ph);   break;
       case "omega":   drawPaddleOmega(px,py,pw,ph);   break;
+      case "circle":  drawPaddleCircle(px,py,pw,ph);  break;
       default:        drawPaddleFlat(px,py,pw,ph);    break; // flat
     }
 
@@ -986,6 +1211,12 @@
     ctx.lineTo(x+7,y+h-6);
     ctx.lineTo(x+7,y);
     ctx.closePath();
+  }
+
+  function drawPaddleCircle(x,y,w,h) {
+    // Draws a flat disc — circular top surface, slightly domed
+    var cx = x + w/2, cy = y + h/2, rx = w/2, ry = h/2 + 2;
+    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2);
   }
 
   /* BALLS */

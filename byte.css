@@ -112,30 +112,195 @@ button:hover {
 
 /* ===========================
    GAME CANVAS
+   Shifted right during gameplay so the sidebar fits on the left.
+   Sidebar=180px + 16px gap, so canvas centre moves +98px right.
 =========================== */
 #gameCanvas {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(calc(-50% + 102px), -50%);
     background: #0a0a0a;
     border: 2px solid #00eaff;
     box-shadow: 0 0 20px #00eaff;
 }
 
 /* ===========================
-   GAME UI (Score, Lives)
+   GAME UI SIDEBAR
 =========================== */
+
+/* The sidebar sits to the left of the (now right-shifted) canvas.
+   Width 180px, positioned so its right edge meets the canvas left edge. */
 #game-ui {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 22px;
-    text-shadow: 0 0 10px #00eaff;
+    top: 50%;
+    /* canvas left edge = 50% - 450px + 98px = 50% - 352px
+       sidebar right edge = that - 16px gap = 50% - 368px
+       sidebar left edge  = right - 180px   = 50% - 548px */
+    left: calc(50% - 552px);
+    transform: translateY(-50%);
+    width: 180px;
+    height: 600px;          /* matches canvas height */
+    flex-direction: column;
+    gap: 0;
+    background: rgba(0, 5, 15, 0.82);
+    border: 1px solid rgba(0, 234, 255, 0.22);
+    border-radius: 12px;
+    padding: 20px 16px 16px;
+    box-shadow:
+        0 0 0 1px rgba(0,234,255,0.06),
+        0 0 32px rgba(0,234,255,0.14),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+    overflow: hidden;
 }
 
-#score, #lives, #level-name {
-    margin-bottom: 10px;
+#game-ui:not(.hidden) {
+    display: flex;
+}
+
+/* Brand */
+.sb-brand {
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: #f704ba;
+    text-shadow: 0 0 12px #f704ba, 0 0 28px #00eaff44;
+    text-align: center;
+    line-height: 1.15;
+    margin-bottom: 14px;
+}
+
+/* Section grouping */
+.sb-section {
+    padding: 10px 0;
+}
+
+.sb-divider {
+    height: 1px;
+    background: rgba(0, 234, 255, 0.12);
+    flex-shrink: 0;
+    margin: 0 4px;
+}
+
+/* Label (small caps heading) */
+.sb-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(0, 234, 255, 0.65);
+    margin-bottom: 5px;
+}
+
+/* Generic value */
+.sb-value {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #fff;
+}
+
+/* Score */
+.sb-score {
+    color: #00eaff;
+    text-shadow: 0 0 14px #00eaff;
+}
+
+/* Best / high score */
+.sb-best {
+    font-size: 15px;
+    color: rgba(0,234,255,0.45);
+    font-weight: 400;
+}
+
+/* Lives dots */
+.sb-lives {
+    font-size: 16px;
+    letter-spacing: 3px;
+    color: #ff2244;
+    text-shadow: 0 0 8px #ff2244;
+}
+
+/* Level number */
+.sb-level-num {
+    color: #f704ba;
+    text-shadow: 0 0 14px #f704ba;
+}
+
+/* Level name */
+.sb-level-name {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Powerup timers in sidebar */
+.sb-pu-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 2px;
+}
+
+.sb-pu-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sb-pu-name {
+    font-size: 9px;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.sb-pu-bar-track {
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.sb-pu-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.1s linear;
+}
+
+.sb-pu-empty {
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    font-style: italic;
+    margin-top: 2px;
+}
+
+/* Combo display */
+.sb-combo-val {
+    color: #ffe000;
+    text-shadow: 0 0 14px #ffe000;
+    transition: color 0.2s;
+}
+
+.sb-combo-val.inactive {
+    color: rgba(255,255,255,0.15);
+    text-shadow: none;
+    font-size: 15px;
+}
+
+/* Controls hint at bottom */
+.sb-hint {
+    font-size: 9px;
+    color: rgba(255,255,255,0.18);
+    letter-spacing: 0.5px;
+    line-height: 1.8;
+    text-align: center;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0,234,255,0.07);
 }
 
 /* ===========================
@@ -162,10 +327,21 @@ button:hover {
    PAUSE + GAME OVER SCREENS
 =========================== */
 #pause-screen, #game-over {
-    background: rgba(0, 0, 0, 0.75);
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 0 20px #00eaff;
+    background: rgba(0, 5, 15, 0.88);
+    padding: 44px 56px;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 234, 255, 0.35);
+    box-shadow:
+        0 0 0 1px rgba(0,234,255,0.08),
+        0 0 40px rgba(0,234,255,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+    backdrop-filter: blur(14px);
+    width: auto;
+    max-width: 380px;
+    /* Centre on the canvas, which is shifted +98px right of viewport centre */
+    left: calc(50% + 102px);
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* ===========================

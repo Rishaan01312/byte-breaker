@@ -59,14 +59,74 @@
         </div>
     </div>
 
-    <!-- GAME UI OVERLAY -->
+    <!-- GAME UI SIDEBAR -->
     <div id="game-ui" class="hidden">
-        <div id="score">Score: 0</div>
-        <div id="lives">Lives: 3</div>
-        <div id="level-name">Level 1</div>
+
+        <!-- Branding -->
+        <div class="sb-brand">BYTE<br>BREAKER</div>
+
+        <!-- Score block -->
+        <div class="sb-section">
+            <div class="sb-label">SCORE</div>
+            <div id="score" class="sb-value sb-score">0</div>
+            <div class="sb-label" style="margin-top:8px">BEST</div>
+            <div id="high-score" class="sb-value sb-best">0</div>
+        </div>
+
+        <div class="sb-divider"></div>
+
+        <!-- Lives -->
+        <div class="sb-section">
+            <div class="sb-label">LIVES</div>
+            <div id="lives" class="sb-lives">●●●●●</div>
+        </div>
+
+        <div class="sb-divider"></div>
+
+        <!-- Level -->
+        <div class="sb-section">
+            <div class="sb-label">LEVEL</div>
+            <div id="level-num" class="sb-value sb-level-num">1</div>
+            <div id="level-name" class="sb-level-name">Boot Sector</div>
+        </div>
+
+        <div class="sb-divider"></div>
+
+        <!-- Bricks remaining -->
+        <div class="sb-section">
+            <div class="sb-label">BRICKS</div>
+            <div id="sb-bricks" class="sb-value">—</div>
+        </div>
+
+        <div class="sb-divider"></div>
+
+        <!-- Active powerups -->
+        <div class="sb-section" id="sb-pu-section">
+            <div class="sb-label">POWER-UPS</div>
+            <div id="sb-powerups">
+                <div class="sb-pu-empty">none active</div>
+            </div>
+        </div>
+
+        <div class="sb-divider"></div>
+
+        <!-- Combo -->
+        <div class="sb-section">
+            <div class="sb-label">COMBO</div>
+            <div id="sb-combo" class="sb-value sb-combo-val">—</div>
+        </div>
+
+        <!-- Spacer then controls hint -->
+        <div style="flex:1"></div>
+        <div class="sb-hint">
+            <div>← → / A D  move</div>
+            <div>SPACE  launch / laser</div>
+            <div>P / ESC  pause</div>
+        </div>
+
     </div>
 
-    <!-- POWER-UP DISPLAY -->
+    <!-- POWER-UP BANNER (flash only) -->
     <div id="powerup-ui" class="hidden">
         <span id="powerup-text"></span>
     </div>
