@@ -95,9 +95,9 @@ button {
     background: transparent;
     border: 2px solid #00eaff;
     color: #00eaff;
-    padding: 12px 28px;
+    padding: 8px 22px;
     margin: 10px;
-    font-size: 20px;
+    font-size: 18px;
     cursor: pointer;
     border-radius: 6px;
     transition: 0.2s;
@@ -820,6 +820,55 @@ button:hover {
     inset:0;
     pointer-events:none;
     z-index:0;
+    overflow:hidden;
+    border-radius:inherit;
+}
+
+#preview-effects::before{
+    content:"";
+    position:absolute;
+    inset:-20%;
+    opacity:0;
+    transition:opacity .35s ease, transform .35s ease;
+    transform:scale(0.9);
+    filter:blur(20px);
+    pointer-events:none;
+}
+
+#preview-effects.theme-classic::before{
+    opacity:1;
+    transform:scale(1);
+    background:radial-gradient(circle, rgba(0,234,255,0.38) 0%, transparent 70%);
+}
+
+#preview-effects.theme-ice::before{
+    opacity:1;
+    transform:scale(1);
+    background:radial-gradient(circle, rgba(158,239,255,0.45) 0%, transparent 70%);
+}
+
+#preview-effects.theme-gold::before{
+    opacity:1;
+    transform:scale(1);
+    background:radial-gradient(circle, rgba(255,216,74,0.42) 0%, transparent 70%);
+}
+
+#preview-effects.theme-plasma::before{
+    opacity:1;
+    transform:scale(1);
+    background:radial-gradient(circle, rgba(204,102,255,0.45) 0%, transparent 70%);
+}
+
+#preview-effects.theme-lava::before{
+    opacity:1;
+    transform:scale(1);
+    background:radial-gradient(circle, rgba(255,91,0,0.45) 0%, transparent 70%);
+}
+
+#preview-effects.theme-galaxy::before{
+    opacity:1;
+    transform:scale(1);
+    background:radial-gradient(circle, rgba(122,92,255,0.42) 0%, transparent 70%);
 }
 
 #preview-stage,
@@ -830,38 +879,6 @@ button:hover {
     position:relative;
     z-index:2;
 
-}
-
-/* PREVIEW THEMES */
-
-.theme-classic::before{
-    background:
-        radial-gradient(circle,#00eaff55 0%,transparent 70%);
-}
-
-.theme-ice::before{
-    background:
-        radial-gradient(circle,#9eefff88 0%,transparent 70%);
-}
-
-.theme-gold::before{
-    background:
-        radial-gradient(circle,#ffd84a88 0%,transparent 70%);
-}
-
-.theme-plasma::before{
-    background:
-        radial-gradient(circle,#cc66ff99 0%,transparent 70%);
-}
-
-.theme-lava::before{
-    background:
-        radial-gradient(circle,#ff5b0088 0%,transparent 70%);
-}
-
-.theme-galaxy::before{
-    background:
-        radial-gradient(circle,#7a5cff99 0%,transparent 70%);
 }
 
 /* LAVA EMBERS */

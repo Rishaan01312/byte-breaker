@@ -573,11 +573,11 @@ var selectedSkin = saveData.equippedSkin || "classic";
         "</div>";
 
     card.onclick = function(){
-        if(!unlocked)
-            return;
         selectedSkin = skin.id;
         updateSkinPreview();
-        showSkins();
+        if (unlocked) {
+            showSkins();
+        }
     };
     grid.appendChild(card);
 });
