@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -21,6 +21,7 @@
             <div class="menu-buttons">
                 <button id="play-btn">▶ &nbsp;Play</button>
                 <button id="levels-btn">⊞ &nbsp;Levels</button>
+                <button id="skins-btn">🖌 &nbsp;Paddle Skins</button>
                 <button id="settings-btn">⚙ &nbsp;Settings</button>
             </div>
         </div>
@@ -32,6 +33,63 @@
         <div id="level-list"></div>
         <button id="back-to-menu">Back</button>
     </div>
+
+    <!-- PADDLE SKINS -->
+
+    <div id="skins-screen" class="hidden">
+    <div class="skins-window">
+        <div class="skins-title">
+            <h2>PADDLE SKINS</h2>
+            <div class="skins-subtitle">
+                Unlock new looks as you conquer Byte Breaker.
+            </div>
+        </div>
+
+    <!-- BIG PREVIEW -->
+    <div class="skins-content">
+        <div class="skin-preview-panel">
+            <div id="preview-effects">
+                <div class="embers">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+
+            <div id="preview-stage">
+                <div id="preview-paddle"></div>
+            </div>
+            <div id="preview-name">
+                CLASSIC
+            </div>
+            <div id="preview-status">
+                Equipped
+            </div>
+            <div id="preview-unlock">
+                Default Skin
+            </div>
+
+            <div class="skins-footer">
+                <button id="equip-skin-btn">
+                    Equip
+                </button>
+                <button id="skins-back">
+                    ← Back
+                </button>
+            </div>
+        </div>
+
+        <!-- GRID -->
+        <div id="skin-grid">
+        </div>
+    </div>
+    </div>
+</div>
 
     <!-- SETTINGS -->
     <div id="settings-screen" class="screen hidden">

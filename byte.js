@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   "use strict";
 
   const canvas = document.getElementById("gameCanvas");
@@ -25,6 +25,16 @@
       osc.start(); osc.stop(ac.currentTime + dur);
     } catch (_) {}
   }
+
+  function unlockAudio() {
+  try {
+    const ac = getAC();
+    if (ac.state === "suspended") {
+      ac.resume();
+    }
+  } catch (e) {}
+}
+
   const sfx = {
     hit:      function() { tone(220,"square",  0.06,0.20); },
     brickLow: function() { tone(330,"square",  0.07,0.16); },
@@ -45,10 +55,31 @@
   function loadSave()  { try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch(e){ return {}; } }
   function writeSave() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(saveData)); } catch(e){} }
   var saveData = loadSave();
+    if(!saveData.skins){
+      saveData.skins = ["classic"];
+  }
+    if(!saveData.equippedSkin){
+      saveData.equippedSkin = "classic";
+  }
   function unlockedSet()  { return new Set(saveData.unlocked || [0]); }
   function unlockLevel(i) { var s=unlockedSet(); s.add(i); saveData.unlocked=Array.from(s); writeSave(); }
   function getHigh(i)     { return (saveData.scores && saveData.scores[i]) || 0; }
   function setHigh(i,sc)  { if(!saveData.scores)saveData.scores={}; if(sc>(saveData.scores[i]||0)){saveData.scores[i]=sc;writeSave();} }
+  function unlockSkinForLevel(level){
+    var unlocks = {
+        4:"gold",
+        7:"ice",
+        11:"lava",
+        14:"plasma",
+        17:"galaxy"
+    };
+    var id = unlocks[level];
+    if(!id) return;
+    if(saveData.skins.indexOf(id)!==-1)
+        return;
+    saveData.skins.push(id);
+    writeSave();
+}
 
   /* PALLETE */
   var C = {
@@ -61,14 +92,22 @@
     white:   "#ffffff",
     grey:    "#445566",
     purple:  "#aa44ff",
+    black:   "#000000",
+    gradient:"radial-gradient( #00b9de, #006aff, #003cff, #001eff, #070089, #030033)",
+    rarityCommon:"#bfc6d4",
+    rarityUncommon:"#2dff6c",
+    rarityRare:"#4ba3ff",
+    rarityEpic:"#b15cff",
+    rarityLegendary:"#ff9830",
+    rarityMythic:"#ff44ff",
   };
 
   /* PADDLE SHAPES */
-  var PADDLE_SHAPES = ["flat","convex","concave","wedge","diamond","fork","blade","omega","omega","circle","flat","diamond","concave","blade","convex","wedge","fork","omega","circle","diamond"];
+  var PADDLE_SHAPES = ["flat","convex","concave","wedge","diamond","fork","blade","omega","omega","wedge","flat","diamond","concave","blade","convex","circle","fork","omega","circle","diamond", "flat"];
 
   /* LEVELS */
   var LEVELS = [
-    { name:"Boot Sector", ballSpeed:5.5, bricks:[
+    { name:"Boot Sector", ballSpeed:10.5, bricks:[
       "1 1 1 1 1 1 1 1 1",
       "1 1 1 1 1 1 1 1 1",
       "2 2 2 2 2 2 2 2 2",
@@ -193,7 +232,7 @@
       "4 X 4 4 X 4 4 X 4",
       "X 4 4 4 4 4 4 4 X"
     ]},
-    { name:"Core Dump", ballSpeed: 10.0, bricks:[
+    { name:"Flitcroft's Special", ballSpeed: 10.0, bricks:[
       "X X X 4 4 4 X X X",
       "X 1 X X 4 X X 2 X",
       "X 3 2 X 1 3 4 L X",
@@ -229,14 +268,23 @@
       "X 4 X 4 X 4 X 4 X",
       "4 X 4 X 4 X 4 X 4",
     ]},
-    { name:"Singularity Protocol", ballSpeed:11.5, bricks:[
+    { name:"Singularity Protocol", ballSpeed:13.1, bricks:[
       "X X 4 X 4 X 4 X X",
+      "X 4 4 4 4 4 X 4 X",
+      "4 4 X X P X 4 X 4",
+      "X X X L 4 L X 4 X",
+      "4 4 4 X P X 4 4 4",
       "X 4 X 4 X 4 X 4 X",
-      "4 X 4 X P X 4 X 4",
-      "X 4 X L X L X 4 X",
-      "4 X 4 X P X 4 X 4",
-      "X 4 X 4 X 4 X 4 X",
-      "X X 4 X 4 X 4 X X",
+      "X X 5 5 5 5 5 X X",
+    ]},
+    { name:"Impossible", ballSpeed:14.0, startLives:5, bricks:[
+      "X X I X I X I X X",
+      "X 4 I 4 I 4 I 4 X",
+      "I 4 X X X X X 4 I",
+      "X 4 4 4 L 4 4 4 X",
+      "X X X X X X X X X",
+      "I I I I I I I I I",
+      "5 5 5 5 5 5 5 5 5",
     ]},
   ];
 
@@ -249,25 +297,82 @@
     "2":{ hp:2, maxHp:2, color:C.cyan,    pts:20 },
     "3":{ hp:3, maxHp:3, color:C.magenta, pts:40 },
     "4":{ hp:4, maxHp:4, color:C.orange,  pts:80 },
+    "5":{ hp:5, maxHp:5, color:C.red,     pts:120 },
+    "I":{ hp:10, maxHp:10, color:C.gradient, pts:500 },
     "X":{ hp:-1, maxHp:-1, color:C.grey,  pts:0,  indestructible:true },
     "P":{ hp:1,  maxHp:1,  color:C.green, pts:50, powerup:true },
-    "L":{ hp:1,  maxHp:1,  color:C.yellow,pts:50, powerup:true, laserDrop:true },
+    "L":{ hp:1,  maxHp:1,  color:C.green, pts:50, powerup:true, laserDrop:true },
   };
 
   /* POWER UP TYPES */
   var PTYPES = [
     { id:"wide",  label:"WIDE PADDLE", color:C.green,   duration:10000 },
-    { id:"slow",  label:"SLOW BALL",   color:C.cyan,    duration:8000  },
+    { id:"slow",  label:"SLOW BALL",   color:C.cyan,    duration:6500  },
     { id:"multi", label:"MULTI-BALL",  color:C.magenta, duration:null  },
     { id:"laser", label:"LASER",       color:C.yellow,  duration:12000 },
     { id:"life",  label:"+1 LIFE",     color:C.red,     duration:null  },
   ];
 
+/* PADDLE SKINS */
+
+var SKINS = [
+    {
+        id: "classic",
+        name: "Classic",
+        color: "#00eaff",
+        glow: "#00eaff",
+        unlock: "Default",
+        rarity: "common"
+    },
+    {
+        id: "gold",
+        name: "Gold",
+        color: "#ffd700",
+        glow: "#ffd700",
+        unlock: "Beat Level 5",
+        rarity: "rare"
+    },
+    {
+        id: "ice",
+        name: "Ice",
+        color: "#8eefff",
+        glow: "#bdf7ff",
+        unlock: "Beat Level 8",
+        rarity: "uncommon"
+    },
+    {
+        id: "lava",
+        name: "Lava",
+        color: "#ff4a00",
+        glow: "#ff9900",
+        unlock: "Beat Level 12",
+        rarity: "legendary"
+    },
+    {
+        id: "plasma",
+        name: "Plasma",
+        color: "#ff00ff",
+        glow: "#ff66ff",
+        unlock: "Beat Level 15",
+        rarity: "epic"
+    },
+    {
+        id: "galaxy",
+        name: "Galaxy",
+        color: "#8855ff",
+        glow: "#00ffff",
+        unlock: "Beat Level 18",
+        rarity: "mythic"
+    }
+];
+
+var selectedSkin = saveData.equippedSkin || "classic";
+
   /* GAME STATES */
   var state = "menu";
   var lvlIdx = 0, score = 0, lives = 3, combo = 0, comboTimer = 0;
   var activePU = {}, puTimers = {};
-  var nextLevelTimer = null; // BUG FIX: track pending nextLevel timeout so we can cancel it
+  var nextLevelTimer = null;
 
   var PADDLE_BASE_W = 110;
   var paddle = { x:0, y:H-45, w:PADDLE_BASE_W, h:14, speed:9, shape:"flat" };
@@ -314,6 +419,7 @@
   var $start    = document.getElementById("start-screen");
   var $levels   = document.getElementById("level-screen");
   var $settings = document.getElementById("settings-screen");
+  var $skins    = document.getElementById("skins-screen");
   var $gameUI   = document.getElementById("game-ui");
   var $pause    = document.getElementById("pause-screen");
   var $gameover = document.getElementById("game-over");
@@ -334,11 +440,29 @@
   var $sbPowerups = document.getElementById("sb-powerups");
   var $sbCombo    = document.getElementById("sb-combo");
 
-  document.getElementById("play-btn").addEventListener("click",        function(){startLevel(0);});
+  document.getElementById("play-btn").addEventListener("click", function(){
+    unlockAudio();
+    startLevel(0);
+  });
   document.getElementById("levels-btn").addEventListener("click",      showLevels);
+  document.getElementById("skins-btn").addEventListener("click",       showSkins);
   document.getElementById("settings-btn").addEventListener("click",    showSettings);
   document.getElementById("back-to-menu").addEventListener("click",    showMenu);
   document.getElementById("settings-back").addEventListener("click",   showMenu);
+  document.getElementById("skins-back").addEventListener("click",      showMenu);
+  document.getElementById("equip-skin-btn").addEventListener("click", function(){
+    var skin = SKINS.find(function(s){
+        return s.id === selectedSkin;
+    });
+    if(!skin) return;
+    if(saveData.skins.indexOf(skin.id) === -1){
+        return;
+    }
+    saveData.equippedSkin = skin.id;
+    writeSave();
+    updateSkinPreview();
+    showSkins();
+});
   document.getElementById("resume-btn").addEventListener("click",      resumeGame);
   document.getElementById("pause-menu-btn").addEventListener("click",  function(){resumeGame();showMenu();});
   document.getElementById("retry-btn").addEventListener("click",       function(){startLevel(lvlIdx);});
@@ -349,7 +473,9 @@
   //* SCREEN HELPERS */
   function hideAll() {
     // Hide all overlay screens, show canvas
-    [$start,$levels,$settings,$pause,$gameover].forEach(function(el){el.classList.add("hidden");});
+    [$start,$levels,$settings,$skins,$pause,$gameover].forEach(function(el){
+      el.classList.add("hidden");
+    });
     $gameUI.classList.add("hidden");
     $puUI.classList.add("hidden");
     canvas.classList.remove("hidden"); // always make canvas visible
@@ -397,12 +523,108 @@
     $settings.classList.remove("hidden");
   }
 
+  function showSkins() {
+    state = "skins";
+    hideAll();
+    canvas.classList.add("hidden");
+    $skins.classList.remove("hidden");
+    var grid = document.getElementById("skin-grid");
+    grid.innerHTML = "";
+
+    SKINS.forEach(function(skin){
+
+    var unlocked = saveData.skins.includes(skin.id);
+    var equipped = saveData.equippedSkin === skin.id;
+    var selected = selectedSkin === skin.id;
+
+    var card = document.createElement("div");
+    card.className = "skin-card";
+
+    if(selected) card.classList.add("selected");
+
+    if(!unlocked) card.classList.add("locked");
+    card.dataset.rarity = skin.rarity;
+    var status = "";
+    if(equipped){
+        status = "✓ Equipped";
+    }else if(unlocked){
+        status = "Click to Select";
+    }else{
+        status = "Locked";
+    }
+    card.innerHTML =
+        "<div class='skin-rarity'>" +
+            skin.rarity.toUpperCase() +
+        "</div>" +
+        "<div class='skin-preview-mini'>" +
+            "<div class='mini-paddle' style='" +
+                "background:"+skin.color+";" +
+                "box-shadow:0 0 12px "+skin.glow+";" +
+            "'></div>" +
+        "</div>" +
+        "<div class='skin-name'>" +
+            skin.name.toUpperCase() +
+        "</div>" +
+        "<div class='skin-unlock'>" +
+            skin.unlock +
+        "</div>" +
+        "<div class='skin-status'>" +
+            status +
+        "</div>";
+
+    card.onclick = function(){
+        if(!unlocked)
+            return;
+        selectedSkin = skin.id;
+        updateSkinPreview();
+        showSkins();
+    };
+    grid.appendChild(card);
+});
+    updateSkinPreview();
+  }
+
+  function updateSkinPreview() {
+
+    var skin = SKINS.find(function(s){
+        return s.id === selectedSkin;
+    });
+    if (!skin) return;
+    document.getElementById("preview-name").textContent =
+        skin.name.toUpperCase();
+    document.getElementById("preview-unlock").textContent =
+        skin.unlock;
+    var status = document.getElementById("preview-status");
+
+    if (saveData.equippedSkin === skin.id) {
+        status.textContent = "✓ Equipped";
+        status.style.color = "#00ff88";
+    } else {
+        status.textContent = "Selected";
+        status.style.color = "#ffe000";
+    }
+
+    var paddle = document.getElementById("preview-paddle");
+    paddle.style.background = skin.color;
+    paddle.style.boxShadow =
+        "0 0 10px " + skin.glow +
+        ",0 0 22px " + skin.glow;
+
+    setPreviewTheme(skin.id);
+}
+
+  function setPreviewTheme(id){
+      var fx = document.getElementById("preview-effects");
+      fx.className = "";
+      fx.classList.add("theme-" + id);
+  }
+
   /* START LEVEL */
   function startLevel(i) {
     // cancel any stale pending nextLevel call from a previous level
     if (nextLevelTimer) { clearTimeout(nextLevelTimer); nextLevelTimer=null; }
 
-    lvlIdx=i; score=0; lives=3; combo=0; comboTimer=0;
+    lvlIdx=i; score=0; lives = LEVELS[i].startLives || 3; combo=0; comboTimer=0;
     particles=[]; falling=[]; lasers=[];
     clearAllPU();       // clears pu timers, resets paddle.w
     buildBricks(i);     // fresh bricks
@@ -419,6 +641,7 @@
   function nextLevel() {
     nextLevelTimer = null; // we've now fired
     var next = lvlIdx+1;
+    unlockSkinForLevel(lvlIdx);
     setHigh(lvlIdx, score);
     if (next < LEVELS.length) unlockLevel(next);
 
@@ -483,11 +706,11 @@
       x: paddle.x + paddle.w/2,
       y: paddle.y - 10,
       vx: Math.cos(ang)*sp, vy: Math.sin(ang)*sp,
-      r: 8, waiting: waiting, trail: [],
+      r: 8, waiting: waiting, trail: [], spawnGrace: 0,
     };
   }
   function spawnBall(waiting) { balls=[makeBall(!!waiting)]; }
-  function launchWaiting()    { balls.forEach(function(b){if(b.waiting)b.waiting=false;}); }
+  function launchWaiting()    { balls.forEach(function(b){ if(b.waiting){ b.waiting=false; b.spawnGrace=6; } }); }
 
   /* LASERS */
   function fireLaser() {
@@ -975,9 +1198,10 @@
   /* PARTICLES */
   function spawnParts(x,y,n,color){
     if(!settings.particles) return;
+    var baseColor = getBaseColor(color, C.white);
     for(var i=0;i<n;i++){
       var ang=Math.random()*Math.PI*2, spd=1.5+Math.random()*5;
-      particles.push({x:x,y:y,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,life:1,decay:.026+Math.random()*.04,r:2+Math.random()*3.5,color:color});
+      particles.push({x:x,y:y,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,life:1,decay:.026+Math.random()*.04,r:2+Math.random()*3.5,color:baseColor});
     }
   }
   function updateParticles(dt){
@@ -1058,6 +1282,46 @@
     ctx.restore();
   }
 
+  function getBaseColor(color, fallback) {
+    if (!color) return fallback || C.white;
+    if (typeof color !== "string") return fallback || C.white;
+    if (/^(linear|radial)-gradient\(/i.test(color)) {
+      var matches = color.match(/#(?:[0-9a-fA-F]{3,8})|rgba?\([^)]+\)|hsla?\([^)]+\)|[a-zA-Z]+/g);
+      if (matches && matches.length) return matches[0];
+    }
+    return color;
+  }
+
+  function createBrickGradient(ctx, br) {
+    var color = br.color;
+    if (typeof color === "string" && /^(linear|radial)-gradient\(/i.test(color)) {
+      var isRadial = /^radial-gradient/i.test(color);
+      var stops = color.replace(/^(linear|radial)-gradient\(\s*/i, "").replace(/\)\s*$/, "").split(",");
+      stops = stops.map(function(stop){ return stop.trim(); }).filter(Boolean);
+      if (stops.length > 0) {
+        var g = isRadial
+          ? ctx.createRadialGradient(br.x + br.w/2, br.y + br.h/2, 1, br.x + br.w/2, br.y + br.h/2, Math.max(br.w, br.h))
+          : ctx.createLinearGradient(br.x, br.y, br.x, br.y + br.h);
+        stops.forEach(function(stop, idx){
+          var pos = stops.length === 1 ? 0 : idx / (stops.length - 1);
+          g.addColorStop(pos, stop);
+        });
+        return g;
+      }
+    }
+
+    var hpr = br.indestructible ? 1 : br.hp/br.maxHp;
+    var g = ctx.createLinearGradient(br.x, br.y, br.x, br.y + br.h);
+    g.addColorStop(0, rgba(getBaseColor(color, C.white), .62*hpr+.07));
+    g.addColorStop(1, rgba(getBaseColor(color, C.white), .22*hpr+.03));
+    return g;
+  }
+
+  function createBrickOutlineColor(br) {
+    var hpr = br.indestructible ? 1 : br.hp/br.maxHp;
+    return rgba(getBaseColor(br.color, C.white), .7+.3*hpr);
+  }
+
   /* BRICKS */
   function drawBricks() {
     bricks.forEach(function(br){
@@ -1067,13 +1331,10 @@
       var hpr = br.indestructible ? 1 : br.hp/br.maxHp;
 
       // fill gradient
-      var g=ctx.createLinearGradient(br.x,br.y,br.x,br.y+br.h);
-      g.addColorStop(0,rgba(br.color,.62*hpr+.07));
-      g.addColorStop(1,rgba(br.color,.22*hpr+.03));
-      ctx.fillStyle=g; rrect(br.x,br.y,br.w,br.h,4); ctx.fill();
+      ctx.fillStyle = createBrickGradient(ctx, br); rrect(br.x,br.y,br.w,br.h,4); ctx.fill();
 
       // glowing border
-      ctx.strokeStyle=rgba(br.color,.7+.3*hpr); ctx.lineWidth=1.5;
+      ctx.strokeStyle = createBrickOutlineColor(br); ctx.lineWidth=1.5;
       rrect(br.x,br.y,br.w,br.h,4); ctx.stroke();
 
       // top sheen
@@ -1082,11 +1343,14 @@
 
       // hp pips
       if(!br.indestructible && br.maxHp>1){
-        var ps=4,gap=5,tot=br.maxHp,sx=br.x+br.w/2-(tot*(ps+gap)-gap)/2;
+        var ps=3.6, gap=4.5, tot=br.maxHp, sx=br.x+br.w/2-(tot*(ps+gap)-gap)/2, pipY=br.y+br.h-6;
         for(var p=0;p<tot;p++){
-          ctx.beginPath(); ctx.arc(sx+p*(ps+gap)+ps/2, br.y+br.h-6, ps/2, 0, Math.PI*2);
-          ctx.fillStyle=p<br.hp?br.color:"rgba(255,255,255,0.1)";
-          ctx.fill();
+          var px=sx+p*(ps+gap)+ps/2;
+          ctx.beginPath(); ctx.arc(px, pipY, ps/2, 0, Math.PI*2);
+          ctx.fillStyle=p<br.hp?getBaseColor(br.color, C.white):"rgba(255,255,255,0.22)";
+          ctx.globalAlpha = p<br.hp ? 1 : 0.22;
+          ctx.strokeStyle="rgba(0,0,0,0.35)"; ctx.lineWidth=0.8;
+          ctx.fill(); ctx.stroke();
         }
       }
 
@@ -1103,13 +1367,19 @@
     });
   }
 
+    function getCurrentSkin(){
+      return SKINS.find(function(s){
+          return s.id===saveData.equippedSkin;
+      }) || SKINS[0];
+  }
+
   /* PADDLE */
   function drawPaddle() {
     var px=paddle.x, py=paddle.y, pw=paddle.w, ph=paddle.h, shape=paddle.shape;
     var laserOn=!!activePU["laser"];
-    var col=laserOn?C.yellow:C.cyan;
-    ctx.save();
-    ctx.shadowColor=col; ctx.shadowBlur=18;
+    var skin=getCurrentSkin();
+    var col=laserOn ? C.yellow : skin.color;    ctx.save();
+    ctx.shadowColor=laserOn ? C.yellow : skin.glow; ctx.shadowBlur=18;
 
     // draw shape
     ctx.beginPath();
@@ -1126,14 +1396,16 @@
     }
 
     var g=ctx.createLinearGradient(px,py,px+pw,py+ph);
-    g.addColorStop(0,rgba(col,.3));
-    g.addColorStop(0.5,rgba(col,.82));
-    g.addColorStop(1,rgba(col,.3));
+    g.addColorStop(0,rgba(col,.22));
+    g.addColorStop(.25,rgba(col,.55));
+    g.addColorStop(.5,rgba(col,1));
+    g.addColorStop(.75,rgba(col,.55));
+    g.addColorStop(1,rgba(col,.22));
     ctx.fillStyle=g; ctx.fill();
     ctx.strokeStyle=col; ctx.lineWidth=2; ctx.stroke();
 
     // top sheen strip
-    ctx.shadowBlur=0; ctx.fillStyle="rgba(255,255,255,0.22)";
+    ctx.shadowBlur=0; ctx.fillStyle="rgba(255,255,255,.28)";
     ctx.fillRect(px+10, py+2, pw-20, 3);
 
     // laser cannon dots
@@ -1368,8 +1640,21 @@
     resizeMC();
     window.addEventListener("resize", resizeMC);
 
-    var MENU_STATES = {menu:1, levels:1, settings:1};
-    var COLORS = ["#00eaff","#f704ba","#ffe000","#00ff88","#aa44ff","#ff6600"];
+    var MENU_STATES = {
+    menu:1, 
+    levels:1,
+    settings:1, 
+    skins:1
+    };
+
+    var COLORS = [
+    "#00eaff",
+    "#f704ba",
+    "#ffe000",
+    "#00ff88",
+    "#aa44ff",
+    "#ff6600"
+    ];
 
     // Each particle: x, y, vy, vx, r, alpha, color, pulse, pulseSpeed
     var mps = [];
